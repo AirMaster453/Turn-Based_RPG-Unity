@@ -6,30 +6,16 @@ using System.Collections.ObjectModel;
 
 namespace PsychesBound
 {
-    public class LevelStat : IStat, ILevelHandler
+    [Serializable]
+    public class IntStat : IStat
     {
-
-        /// <summary>
-        /// The initial value starting at level `
-        /// </summary>
         [SerializeField, Min(1)]
-        protected int initialValue;
-
-        public int InitialValue { get => initialValue; set => initialValue = value; }
-
-
-        protected int lastInitValue = int.MinValue;
-        /// <summary>
-        /// The base value of the stat at current level
-        /// </summary>
-        //[SerializeField, Min(1)]
         protected int _baseValue;
+
 
         protected int lastBaseValue = int.MinValue;
 
-
         protected int _value = 0;
-
 
         private readonly List<IModifier> modifiers = new List<IModifier>();
 
@@ -40,17 +26,19 @@ namespace PsychesBound
 
         private bool isDirty = true;
 
-        public int BaseValue { get => _baseValue; set => _baseValue = Mathf.Clamp(value, 1, int.MaxValue); }
+        public int BaseValue
+        {
+            get => _baseValue;
+        }
 
         public int Value
         {
             get
             {
-                if(isDirty || _baseValue != lastBaseValue || initialValue != lastInitValue)
+                if (isDirty || _baseValue != lastBaseValue)
                 {
                     _value = CalculateFinalValue();
                     lastBaseValue = _baseValue;
-                    lastInitValue = initialValue;
                     isDirty = false;
                 }
                 return _value;
@@ -60,17 +48,16 @@ namespace PsychesBound
         float IStat.BaseValue => BaseValue;
         float IStat.Value => Value;
 
-        public LevelStat() : this(1)
+        public IntStat() : this(1)
         {
 
         }
 
-        public LevelStat(int initVal)
+        public IntStat(int baseVal)
         {
             modifiers = new List<IModifier>();
             readonlyModifiers = modifiers.AsReadOnly();
-            initialValue = initVal;
-            _baseValue = initVal;
+            _baseValue = baseVal;
             isDirty = true;
         }
 
@@ -84,16 +71,16 @@ namespace PsychesBound
         public bool RemoveFromSource(object src)
         {
             bool didRemove = false;
-            for(int i = modifiers.Count - 1; i >= 0; i--)
+            for (int i = modifiers.Count - 1; i >= 0; i--)
             {
                 var mod = modifiers[i];
 
-                if(mod.Source == src)
+                if (mod.Source == src)
                 {
                     modifiers.RemoveAt(i);
                     isDirty = true;
                     didRemove = true;
-                }    
+                }
             }
 
             return didRemove;
@@ -120,7 +107,7 @@ namespace PsychesBound
         {
             int finalValue = BaseValue;
 
-            for(int i = 0; i < modifiers.Count; i++)
+            for (int i = 0; i < modifiers.Count; i++)
             {
                 var mod = modifiers[i];
 

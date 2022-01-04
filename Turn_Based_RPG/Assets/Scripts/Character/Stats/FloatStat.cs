@@ -6,30 +6,16 @@ using System.Collections.ObjectModel;
 
 namespace PsychesBound
 {
-    public class LevelStat : IStat, ILevelHandler
+    [Serializable]
+    public class FloatStat : IStat, ISerializationCallbackReceiver
     {
-
-        /// <summary>
-        /// The initial value starting at level `
-        /// </summary>
         [SerializeField, Min(1)]
-        protected int initialValue;
-
-        public int InitialValue { get => initialValue; set => initialValue = value; }
+        protected float _baseValue;
 
 
-        protected int lastInitValue = int.MinValue;
-        /// <summary>
-        /// The base value of the stat at current level
-        /// </summary>
-        //[SerializeField, Min(1)]
-        protected int _baseValue;
+        protected float lastBaseValue = float.MinValue;
 
-        protected int lastBaseValue = int.MinValue;
-
-
-        protected int _value = 0;
-
+        protected float _value = 0;
 
         private readonly List<IModifier> modifiers = new List<IModifier>();
 
@@ -40,37 +26,37 @@ namespace PsychesBound
 
         private bool isDirty = true;
 
-        public int BaseValue { get => _baseValue; set => _baseValue = Mathf.Clamp(value, 1, int.MaxValue); }
+        public float BaseValue
+        {
+            get => _baseValue;
+        }
 
-        public int Value
+        public float Value
         {
             get
             {
-                if(isDirty || _baseValue != lastBaseValue || initialValue != lastInitValue)
+                if (isDirty || _baseValue != lastBaseValue)
                 {
                     _value = CalculateFinalValue();
                     lastBaseValue = _baseValue;
-                    lastInitValue = initialValue;
                     isDirty = false;
                 }
                 return _value;
             }
         }
 
-        float IStat.BaseValue => BaseValue;
-        float IStat.Value => Value;
+        
 
-        public LevelStat() : this(1)
+        public FloatStat() : this(1)
         {
 
         }
 
-        public LevelStat(int initVal)
+        public FloatStat(int baseVal)
         {
             modifiers = new List<IModifier>();
             readonlyModifiers = modifiers.AsReadOnly();
-            initialValue = initVal;
-            _baseValue = initVal;
+            _baseValue = baseVal;
             isDirty = true;
         }
 
@@ -84,16 +70,16 @@ namespace PsychesBound
         public bool RemoveFromSource(object src)
         {
             bool didRemove = false;
-            for(int i = modifiers.Count - 1; i >= 0; i--)
+            for (int i = modifiers.Count - 1; i >= 0; i--)
             {
                 var mod = modifiers[i];
 
-                if(mod.Source == src)
+                if (mod.Source == src)
                 {
                     modifiers.RemoveAt(i);
                     isDirty = true;
                     didRemove = true;
-                }    
+                }
             }
 
             return didRemove;
@@ -116,19 +102,29 @@ namespace PsychesBound
                 return 0;
         }
 
-        private int CalculateFinalValue()
+        private float CalculateFinalValue()
         {
-            int finalValue = BaseValue;
+            float finalValue = BaseValue;
 
-            for(int i = 0; i < modifiers.Count; i++)
+            for (int i = 0; i < modifiers.Count; i++)
             {
                 var mod = modifiers[i];
 
 
-                finalValue = (int)mod.Modify(finalValue);
+                finalValue = mod.Modify(finalValue);
             }
 
-            return finalValue;
+            return (float)Math.Round(finalValue, 1);
+        }
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            _baseValue = (float)Math.Round(_baseValue, 1);
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            
         }
     }
 }
