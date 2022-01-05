@@ -8,6 +8,7 @@ namespace PsychesBound
     /// <summary>
     /// Core component for all characters
     /// </summary>
+    [RequireComponent(typeof(StatManager))]
     [RequireComponent(typeof(RoleManager))]
     public class Unit : MonoBehaviour
     {
@@ -16,7 +17,9 @@ namespace PsychesBound
         // Add level. (If jobs/roles don't offer their own level system)
 
         // Add Stats
+        private StatManager stats;
 
+        public StatManager Stats => stats;
         /// <summary>
         /// Temperary agility stat
         /// </summary>
@@ -47,7 +50,7 @@ namespace PsychesBound
         public void Place(Tile target, BattleField field)
         {
             // Make sure old tile location is not still pointing to this unit
-            if (tile != null && tile.unit == gameObject)
+            if (tile != null && tile.unit == this)
                 tile.unit = null;
 
             // Link unit and tile references
@@ -77,6 +80,7 @@ namespace PsychesBound
         void Start()
         {
             roleManager = GetComponent<RoleManager>();
+            stats = GetComponent<StatManager>();
         }
 
         // Update is called once per frame

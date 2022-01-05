@@ -52,7 +52,7 @@ namespace PsychesBound
 
         }
 
-        public FloatStat(int baseVal)
+        public FloatStat(float baseVal)
         {
             modifiers = new List<IModifier>();
             readonlyModifiers = modifiers.AsReadOnly();

@@ -7,7 +7,7 @@ using System;
 namespace PsychesBound
 {
     [Serializable]
-    public class Role : ISerializationCallbackReceiver
+    public class Role : IEquip, ISerializationCallbackReceiver
     {
         [SerializeField, HideInInspector]
         private RoleBonus[] roleBonus = new RoleBonus[Enum.GetNames(typeof(StatType)).Length];
@@ -39,6 +39,18 @@ namespace PsychesBound
                 return bonus;
             }
         }
+
+        public IModifier GetModifier(StatType type)
+        {
+            return GetBonus(type);
+        }
+
+        public IModifier Distance => new FlatModifier(roleType.Distance, this);
+        public IModifier JumpHeight => new FlatModifier(roleType.JumpHeight, this);
+        public IModifier HitRate => new FlatModifier(roleType.HitRate, this);
+        public IModifier CritRate => new FlatModifier(roleType.CritRate, this);
+        public IModifier Evasion => new FlatModifier(roleType.Evasion, this);
+        public IModifier Speed => new FlatModifier(roleType.Speed, this);
 
         public void InitialBaseValues(StatFormulaTree tree, int lvl)
         {
@@ -89,13 +101,14 @@ namespace PsychesBound
             {
                 for (int i = 0; i < roleBonus.Length; i++)
                 {
-                    roleBonus[i] = new RoleBonus(roleType.GetStat((StatType)i), this);
+                    roleBonus[i].InitialValue = roleType.GetStat((StatType)i);
+                    roleBonus[i].Source = this;
 
                 }
             }
             catch
             {
-
+                //roleBonus = new RoleBonus[Enum.GetNames(typeof(StatType)).Length];
             }
         }
 
