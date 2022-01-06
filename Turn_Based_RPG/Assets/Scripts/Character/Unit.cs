@@ -47,6 +47,9 @@ namespace PsychesBound
 
         private RoleManager roleManager;
 
+        [HideInInspector]
+        public Actions Actions = default;
+
         public void Place(Tile target, BattleField field)
         {
             // Make sure old tile location is not still pointing to this unit
