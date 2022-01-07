@@ -52,6 +52,34 @@ namespace PsychesBound
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""UI"",
+            ""id"": ""2efbca05-9336-4d19-9576-c07f1371ec5c"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""47736f57-b30b-46f8-ae9d-b8a4769dcbc2"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""cb0bb431-d7a4-4bcc-a1cb-670e5b2c08fd"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -71,6 +99,9 @@ namespace PsychesBound
             // Overworld
             m_Overworld = asset.FindActionMap("Overworld", throwIfNotFound: true);
             m_Overworld_Move = m_Overworld.FindAction("Move", throwIfNotFound: true);
+            // UI
+            m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
+            m_UI_Move = m_UI.FindAction("Move", throwIfNotFound: true);
         }
 
         public void Dispose()
@@ -159,6 +190,39 @@ namespace PsychesBound
             }
         }
         public OverworldActions @Overworld => new OverworldActions(this);
+
+        // UI
+        private readonly InputActionMap m_UI;
+        private IUIActions m_UIActionsCallbackInterface;
+        private readonly InputAction m_UI_Move;
+        public struct UIActions
+        {
+            private @PlayerInput m_Wrapper;
+            public UIActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+            public InputAction @Move => m_Wrapper.m_UI_Move;
+            public InputActionMap Get() { return m_Wrapper.m_UI; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(UIActions set) { return set.Get(); }
+            public void SetCallbacks(IUIActions instance)
+            {
+                if (m_Wrapper.m_UIActionsCallbackInterface != null)
+                {
+                    @Move.started -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                    @Move.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                    @Move.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnMove;
+                }
+                m_Wrapper.m_UIActionsCallbackInterface = instance;
+                if (instance != null)
+                {
+                    @Move.started += instance.OnMove;
+                    @Move.performed += instance.OnMove;
+                    @Move.canceled += instance.OnMove;
+                }
+            }
+        }
+        public UIActions @UI => new UIActions(this);
         private int m_ControllerSchemeIndex = -1;
         public InputControlScheme ControllerScheme
         {
@@ -169,6 +233,10 @@ namespace PsychesBound
             }
         }
         public interface IOverworldActions
+        {
+            void OnMove(InputAction.CallbackContext context);
+        }
+        public interface IUIActions
         {
             void OnMove(InputAction.CallbackContext context);
         }

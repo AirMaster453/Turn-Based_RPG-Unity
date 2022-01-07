@@ -50,6 +50,8 @@ namespace PsychesBound
         [SerializeField]
         private StatFormulaTree tree;
 
+        public StatFormulaTree Tree => tree;
+
 
         private RoleManager roleManager;
 
@@ -80,6 +82,11 @@ namespace PsychesBound
 
                 return stats[(int)i];
             }
+        }
+
+        public float TimeBarCharge()
+        {
+            return GetStat(StatType.Agility).Value * SpeedPercent.Value;
         }
 
         public void Equip(IEquip equip)

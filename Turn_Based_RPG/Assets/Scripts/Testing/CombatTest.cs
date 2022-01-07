@@ -9,10 +9,10 @@ namespace PsychesBound.Testing
     public class CombatTest : MonoBehaviour
     {
         [SerializeField]
-        private Unit player;
+        public Unit player;
 
         [SerializeField]
-        private Unit enemy;
+        public Unit enemy;
 
         // Start is called before the first frame update
         void Start()

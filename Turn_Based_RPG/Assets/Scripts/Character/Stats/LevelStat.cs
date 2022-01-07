@@ -76,6 +76,8 @@ namespace PsychesBound
 
         public void AddModifier(IModifier mod)
         {
+            if (mod == null)
+                return;
             modifiers.Add(mod);
             modifiers.Sort(CompareModifiers);
             isDirty = true;

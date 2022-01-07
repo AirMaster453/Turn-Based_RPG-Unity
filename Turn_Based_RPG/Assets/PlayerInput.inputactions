@@ -28,6 +28,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "UI",
+            "id": "2efbca05-9336-4d19-9576-c07f1371ec5c",
+            "actions": [
+                {
+                    "name": "Move",
+                    "type": "Value",
+                    "id": "47736f57-b30b-46f8-ae9d-b8a4769dcbc2",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "cb0bb431-d7a4-4bcc-a1cb-670e5b2c08fd",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

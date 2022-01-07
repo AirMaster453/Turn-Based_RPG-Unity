@@ -12,6 +12,13 @@ namespace PsychesBound
         [SerializeField, HideInInspector]
         private RoleBonus[] roleBonus = new RoleBonus[Enum.GetNames(typeof(StatType)).Length];
 
+        [SerializeField]
+        private Level _level = new Level(1);
+
+        public Level Level => _level;
+
+
+        private StatFormulaTree formulaTree;
 
         public RoleBonus GetBonus(StatType type)
         {
@@ -52,12 +59,14 @@ namespace PsychesBound
         public IModifier Evasion => new FlatModifier(roleType.Evasion, this);
         public IModifier Speed => new FlatModifier(roleType.Speed, this);
 
-        public void InitialBaseValues(StatFormulaTree tree, int lvl)
+        public void InitialBaseValues(StatFormulaTree tree)
         {
+            formulaTree = tree;
             StatType t = 0;
             for(int i = 0; i < roleBonus.Length; i++, t++)
             {
-                GetBonus(t).BaseValue = (int)tree.GetFormula(t).Calculate(GetBonus(t), lvl);
+                //GetBonus(t).InitialValue = roleType.GetStat(t);
+                GetBonus(t).BaseValue = (int)tree.GetFormula(t).Calculate(GetBonus(t), _level.CurrentLevel);
             }
         }
 
@@ -90,6 +99,8 @@ namespace PsychesBound
                     roleBonus[i] = new RoleBonus(this);
                 }
             }
+
+            _level.OnLevelChanged += OnLevelChange;
         }
 
         
@@ -109,6 +120,17 @@ namespace PsychesBound
             catch
             {
                 //roleBonus = new RoleBonus[Enum.GetNames(typeof(StatType)).Length];
+            }
+        }
+
+        private void OnLevelChange(int level, int delta)
+        {
+            if (formulaTree)
+                return;
+            StatType t = 0;
+            for (int i = 0; i < roleBonus.Length; i++, t++)
+            {
+                GetBonus(t).BaseValue = (int)formulaTree.GetFormula(t).Calculate(GetBonus(t), level);
             }
         }
 

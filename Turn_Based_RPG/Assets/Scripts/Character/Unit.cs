@@ -14,22 +14,26 @@ namespace PsychesBound
     {
 
         public const int AtbBarSize = 5000;
+        public const float OverallSpeed = 7.25f;
         // Add level. (If jobs/roles don't offer their own level system)
 
         // Add Stats
         private StatManager stats;
 
         public StatManager Stats => stats;
-        /// <summary>
-        /// Temperary agility stat
-        /// </summary>
-        public int agility = 10;
+        
+        //public int agility = 10;
 
-        public int movement = 2;
+        //public int movement = 2;
 
-        public int jumpHeight;
+        //public int jumpHeight;
 
-        private float ActiveTimeBar = 0;
+        private float activeTimeBar = 0;
+
+        public float TimeBarPercent()
+        {
+            return activeTimeBar / AtbBarSize;
+        }
 
         // Add Role/job/class
 
@@ -40,7 +44,9 @@ namespace PsychesBound
 
         public Transform Jumper => jumper;
 
-        public Tile tile { get; protected set; }
+        public Tile tile { get => _tile; protected set => _tile = value; }
+
+        private Tile _tile;
 
         [HideInInspector]
         public Direction dir;
@@ -67,7 +73,7 @@ namespace PsychesBound
         }
         public void Match()
         {
-            transform.localPosition = tile.transform.position;
+            transform.position = tile.transform.position /** 2*/;
             transform.localEulerAngles = dir.ToEuler();
         }
     
@@ -106,13 +112,21 @@ namespace PsychesBound
 
         private IEnumerator OnBattle(GameBattleState state)
         {
+            
             while(true)
             {
-                ActiveTimeBar += agility * Time.deltaTime;
+                activeTimeBar += stats.TimeBarCharge() * OverallSpeed * Time.deltaTime;
+
+                activeTimeBar = Mathf.Clamp(activeTimeBar, 0, AtbBarSize);
+
+                Debug.Log($"{name}: atb = {activeTimeBar}");
                 yield return new WaitWhile(() => state.TurnIsActive);
-                if (ActiveTimeBar >= AtbBarSize)
+                if (activeTimeBar >= AtbBarSize && state.turnHolder == null)
                 {
-                    
+                    state.StartTurn(this);
+                    activeTimeBar = 0;
+
+                    Debug.Log($"{name} turn is active");
                 }
             }
         }

@@ -29,6 +29,8 @@ namespace PsychesBound
 
         public ReadOnlyCollection<Ability> Abilities => abilities.AsReadOnly();
 
+        private StatManager stats;
+
         /// <summary>
         /// Event to be called when the main role is changed
         /// </summary>
@@ -87,6 +89,13 @@ namespace PsychesBound
         public void RemoveSubRole()
         {
             subRole = -1;
+        }
+
+        public void GainExperience(long exp)
+        {
+            MainRole?.Level?.GainExperienceAsync(exp);
+
+            SubRole?.Level?.GainExperienceAsync(exp);
         }
 
         //public bool ChangeBothRoles(int main, int sub)
@@ -199,6 +208,22 @@ namespace PsychesBound
             {
                 return false;
             }
+        }
+
+        private void Start()
+        {
+            stats = GetComponent<StatManager>();
+            stats.RemoveFromSource(this);
+            if (HasMainRole())
+            {
+                roles[mainRole].InitialBaseValues(stats.Tree);
+                stats.Equip(MainRole);
+            }
+
+            if(HasSubRole())
+                roles[subRole].InitialBaseValues(stats.Tree);
+
+            
         }
     }
 }

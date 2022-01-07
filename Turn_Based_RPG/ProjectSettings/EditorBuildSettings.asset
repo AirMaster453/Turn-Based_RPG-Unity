@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BattleScene.unity
     guid: 459401329e6d4d14fa0f25dd99e1dc6d
+  - enabled: 1
+    path: Assets/Scenes/UI.unity
+    guid: 6da1002ae7660744c9450c60b23781d6
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 7a308f3fdf289c44bb421d8818775ce1, type: 2}

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 821f47a54ca78f74abb3603bc53c704d, type: 3}
-  m_Name: Fighter
+  m_Name: Sorcerer
   m_EditorClassIdentifier: 
-  statBonuses: 01000000020000000300000001000000010000000100000001000000010000000400000001000000
+  statBonuses: 01000000010000000100000001000000010000000100000004000000020000000200000001000000
   distance: 0
   jumpHeight: 0
-  hitRate: 0
-  critRate: 20
+  hitRate: 5
+  critRate: 0
   evasion: 0
-  speed: 30
+  speed: 10
   abilities: []
   movementType: {fileID: 11400000, guid: dca6168e0423861458ec15477e56b4d8, type: 2}
