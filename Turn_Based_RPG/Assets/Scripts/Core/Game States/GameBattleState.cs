@@ -34,6 +34,13 @@ namespace PsychesBound
             turnHolder.OnTurnStart();
         }
 
+        public void EndTurn()
+        {
+            turnHolder.OnTurnEnd();
+            TurnIsActive = false;
+            turnHolder = null;
+        }
+
         public IEnumerator OnEnter()
         {
             //GameManager.field = Object.FindObjectOfType<BattleField>();
@@ -41,6 +48,8 @@ namespace PsychesBound
 
             GameManager.field.PlacePlayers(GameManager.CombatTest.player);
             GameManager.field.PlaceEnemies(GameManager.CombatTest.enemy);
+
+            GameManager.CombatTest.player.OnTurnStartCallback += MovePlayer;
 
             CombatTime = 0;
 
@@ -65,6 +74,16 @@ namespace PsychesBound
                 }
                 yield return null;
             }
+        }
+
+        public void MovePlayer(Unit unit)
+        {
+            var nextTiles = unit.RoleManager.MainRole.RoleType.MovementType.GetTilesInRange(GameManager.field, unit);
+
+            int tile = Random.Range(0, nextTiles.Count);
+            Debug.Log($"{unit} is moving");
+
+            GameManager.StartCoroutine(unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field));
         }
     }
 }

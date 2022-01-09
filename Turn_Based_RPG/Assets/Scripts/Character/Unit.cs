@@ -53,6 +53,8 @@ namespace PsychesBound
 
         private RoleManager roleManager;
 
+        public RoleManager RoleManager => roleManager;
+
         [HideInInspector]
         public Actions Actions = default;
 
@@ -76,8 +78,44 @@ namespace PsychesBound
             transform.position = tile.transform.position /** 2*/;
             transform.localEulerAngles = dir.ToEuler();
         }
-    
 
+        private Dictionary<string, object> _extraData = new Dictionary<string, object>();
+
+        public void AddExtraData(string key, object value)
+        {
+            if (_extraData.ContainsKey(key))
+                return;
+
+
+            _extraData.Add(key, value);
+        }
+
+        public object GetExtraData(string key)
+        {
+            object value;
+
+            _extraData.TryGetValue(key, out value);
+            return value;
+        }
+
+
+        public void SetExtraData(string key, object value)
+        {
+            try
+            {
+                _extraData[key] = value;
+            }
+            catch
+            {
+
+            }
+        }
+        public bool RemoveExtraData(string key)
+        {
+            return _extraData.Remove(key);
+        }
+    
+        
         public virtual event Action<Unit> OnTurnStartCallback;
         public virtual event Action<Unit> OnTurnEndCallback;
 

@@ -84,6 +84,47 @@ namespace PsychesBound
             }
         }
 
+        private int _currentHealth = int.MaxValue;
+
+        public int CurrentHealth
+        {
+            get
+            {
+                return _currentHealth;
+            }
+
+            set
+            {
+                _currentHealth = Mathf.Clamp(value, 0, GetStat(StatType.HitPoints).Value);
+            }
+        }
+
+        public float HealthPercent()
+        {
+            return (float)CurrentHealth / (float)GetStat(StatType.HitPoints).Value;
+        }
+
+
+        private int _currentAether = int.MaxValue;
+
+        public int CurrentAether
+        {
+            get
+            {
+                return _currentAether;
+            }
+
+            set
+            {
+                _currentAether = Mathf.Clamp(value, 0, GetStat(StatType.Aether).Value);
+            }
+        }
+
+        public float AetherPercent()
+        {
+            return (float)CurrentAether / (float)GetStat(StatType.Aether).Value;
+        }
+
         public float TimeBarCharge()
         {
             return GetStat(StatType.Agility).Value * SpeedPercent.Value;

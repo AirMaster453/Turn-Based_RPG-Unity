@@ -28,6 +28,7 @@ namespace PsychesBound
                 Direction dir = from.GetDirection(to);
                 if (unit.dir != dir)
                     yield return unit.StartCoroutine(Turn(unit,dir));
+
                 if (from.height == to.height)
                     yield return unit.StartCoroutine(Walk(unit, to));
                 else
@@ -61,8 +62,10 @@ namespace PsychesBound
                 t.endValue = new Vector3(t.startValue.x, 360f, t.startValue.z);
             unit.dir = dir;
 
-            while (t != null)
-                yield return null;
+            //while (t != null)
+            //    yield return null;
+
+            yield return new WaitForSeconds(t.Duration());
 
         }
 
