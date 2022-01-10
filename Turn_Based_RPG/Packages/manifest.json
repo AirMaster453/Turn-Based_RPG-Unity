@@ -46,5 +46,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "com.cysharp.unitask",
+      "url": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+      "scopes": [
+        "Packages/manifest.json"
+      ]
+    }
+  ]
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 
 
+
 namespace PsychesBound
 {
     /// <summary>
@@ -169,6 +170,7 @@ namespace PsychesBound
                     activeTimeBar = 0;
 
                     Debug.Log($"{name} turn is active");
+                    
                 }
             }
         }
