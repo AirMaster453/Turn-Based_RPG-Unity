@@ -24,28 +24,20 @@ MonoBehaviour:
     m_Scopes: []
     m_IsDefault: 1
     m_Capabilities: 7
-  - m_Id: scoped:com.cysharp.unitask
-    m_Name: com.cysharp.unitask
-    m_Url: https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask
-    m_Scopes:
-    - Packages/manifest.json
-    m_IsDefault: 0
-    m_Capabilities: 0
-  m_UserSelectedRegistryName: com.cysharp.unitask
+  m_UserSelectedRegistryName: 
   m_UserAddingNewScopedRegistry: 0
   m_RegistryInfoDraft:
     m_ErrorMessage: 
     m_Original:
-      m_Id: scoped:com.cysharp.unitask
-      m_Name: com.cysharp.unitask
-      m_Url: https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask
-      m_Scopes:
-      - Packages/manifest.json
+      m_Id: 
+      m_Name: 
+      m_Url: 
+      m_Scopes: []
       m_IsDefault: 0
       m_Capabilities: 0
     m_Modified: 0
-    m_Name: com.cysharp.unitask
-    m_Url: https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask
+    m_Name: 
+    m_Url: 
     m_Scopes:
-    - Packages/manifest.json
+    - 
     m_SelectedScopeIndex: 0

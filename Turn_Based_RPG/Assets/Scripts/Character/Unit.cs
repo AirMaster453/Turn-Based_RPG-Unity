@@ -4,7 +4,6 @@ using UnityEngine;
 using System;
 
 
-
 namespace PsychesBound
 {
     /// <summary>
@@ -110,7 +109,7 @@ namespace PsychesBound
             }
             catch
             {
-
+                
             }
         }
         public bool RemoveExtraData(string key)
@@ -172,6 +171,7 @@ namespace PsychesBound
                     Debug.Log($"{name} turn is active");
                     
                 }
+                
             }
         }
 
