@@ -14,7 +14,7 @@ namespace PsychesBound
     {
 
         public const int AtbBarSize = 5000;
-        public const float OverallSpeed = 7.25f;
+        public const float OverallSpeed = 9.25f;
         // Add level. (If jobs/roles don't offer their own level system)
 
         // Add Stats

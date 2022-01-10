@@ -29997,7 +29997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance:
-    _baseValue: 1
+    _baseValue: 2
   jumpHeight:
     _baseValue: 1
   hitRatePercent:
