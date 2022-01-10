@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+
 namespace PsychesBound
 {
     /// <summary>
@@ -30,6 +31,7 @@ namespace PsychesBound
 
         private float activeTimeBar = 0;
 
+        
         public float TimeBarPercent()
         {
             return activeTimeBar / AtbBarSize;
@@ -150,15 +152,17 @@ namespace PsychesBound
 
         private IEnumerator OnBattle(GameBattleState state)
         {
-            
-            while(true)
+            var routine = new WaitWhile(() => state.TurnIsActive);
+            while (true)
             {
                 activeTimeBar += stats.TimeBarCharge() * OverallSpeed * Time.deltaTime;
 
                 activeTimeBar = Mathf.Clamp(activeTimeBar, 0, AtbBarSize);
 
                 Debug.Log($"{name}: atb = {activeTimeBar}");
-                yield return new WaitWhile(() => state.TurnIsActive);
+
+                //var routine = new WaitWhile(() => state.TurnIsActive);
+                yield return routine;
                 if (activeTimeBar >= AtbBarSize && state.turnHolder == null)
                 {
                     state.StartTurn(this);
