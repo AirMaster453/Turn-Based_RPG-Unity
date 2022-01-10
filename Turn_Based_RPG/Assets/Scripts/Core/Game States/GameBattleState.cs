@@ -50,7 +50,6 @@ namespace PsychesBound
             GameManager.field.PlaceEnemies(GameManager.CombatTest.enemy);
 
             GameManager.CombatTest.player.OnTurnStartCallback += MovePlayer;
-            GameManager.CombatTest.enemy.OnTurnStartCallback += MovePlayer;
 
             CombatTime = 0;
 
@@ -79,31 +78,12 @@ namespace PsychesBound
 
         public void MovePlayer(Unit unit)
         {
-            //var nextTiles = unit.RoleManager.MainRole.RoleType.MovementType.GetTilesInRange(GameManager.field, unit);
-
-            //int tile = Random.Range(0, nextTiles.Count);
-            //Debug.Log($"{unit} is moving");
-
-            //GameManager.StartCoroutine(unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field));
-
-            //EndTurn();
-
-            GameManager.StartCoroutine(MovePlayerRoutine(unit));
-        }
-
-
-        private IEnumerator MovePlayerRoutine(Unit unit)
-        {
             var nextTiles = unit.RoleManager.MainRole.RoleType.MovementType.GetTilesInRange(GameManager.field, unit);
 
             int tile = Random.Range(0, nextTiles.Count);
             Debug.Log($"{unit} is moving");
 
-            yield return unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field);
-
-            EndTurn();
-
-            yield break;
+            GameManager.StartCoroutine(unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field));
         }
     }
 }

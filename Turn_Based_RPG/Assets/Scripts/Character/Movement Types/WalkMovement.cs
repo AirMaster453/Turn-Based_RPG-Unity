@@ -72,20 +72,16 @@ namespace PsychesBound
         IEnumerator Walk(Unit unit, Tile to)
         {
             Tweener tweener = unit.transform.DOMove(to.center, 0.5f, false).SetEase(Ease.Linear);
-            //while (tweener != null)
-            //    yield return null;
-
-            yield return new WaitForSeconds(tweener.Duration());
+            while (tweener != null)
+                yield return null;
         }
         IEnumerator Jump(Unit unit, Tile to)
         {
             Tweener tweener = unit.transform.DOMove(to.center, 0.5f, false).SetEase(Ease.Linear);
             Tweener t2 = unit.Jumper.DOLocalMove(new Vector3(0, Tile.stepHeight * 2f, 0), tweener.Duration() / 2f, false).SetEase(Ease.InOutQuad);
             t2.SetLoops(1, LoopType.Yoyo);
-            //while (tweener != null)
-            //    yield return null;
-
-            yield return new WaitForSeconds(tweener.Duration());
+            while (tweener != null)
+                yield return null;
         }
     }
 }
