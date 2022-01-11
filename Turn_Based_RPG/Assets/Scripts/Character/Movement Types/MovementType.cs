@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
 
 namespace PsychesBound
 {
@@ -26,6 +27,13 @@ namespace PsychesBound
                     tiles.RemoveAt(i);
         }
 
-        public abstract IEnumerator Traverse(Tile tile, Unit unit, BattleField field);
+        /// <summary>
+        /// Make sure method is async when overriding
+        /// </summary>
+        /// <param name="tile"></param>
+        /// <param name="unit"></param>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public abstract UniTask Traverse(Tile tile, Unit unit, BattleField field);
     }
 }

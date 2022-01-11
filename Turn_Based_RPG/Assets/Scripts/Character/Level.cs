@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using Cysharp.Threading.Tasks;
 
 namespace PsychesBound
 {
@@ -94,7 +95,7 @@ namespace PsychesBound
             return LevelScaling(_level + 1) - _exp;
         }
 
-        public async void GainExperienceAsync(long exp)
+        public async UniTask GainExperienceAsync(long exp)
         {
             if (_level >= MaxLevel)
                 return;
@@ -119,11 +120,13 @@ namespace PsychesBound
                     return;
                 }
 
-                CancellationTokenSource src = new CancellationTokenSource();
-                var task = Task.Run(()=> Task.Yield(), src.Token);
-                GameManager.AddToken(src);
-                await task;
-                GameManager.RemoveToken(src);
+                //CancellationTokenSource src = new CancellationTokenSource();
+                //var task = Task.Run(()=> Task.Yield(), src.Token);
+                //GameManager.AddToken(src);
+                //await task;
+                //GameManager.RemoveToken(src);
+
+                await UniTask.Yield();
             }
 
             OnExperienceGain?.Invoke(exp);

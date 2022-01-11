@@ -6,15 +6,15 @@ using UnityEngine;
 namespace PsychesBound
 {
     [System.Serializable]
-    public class PercentageModifier : IModifier
+    public struct PercentageModifier : IModifier
     {
         [SerializeField]
-        protected float _value;
+        private float _value;
 
         [SerializeField]
-        protected int _order;
+        private int _order;
 
-        protected object _source;
+        private object _source;
 
 
         public float Value => _value;

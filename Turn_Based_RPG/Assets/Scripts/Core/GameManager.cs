@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using Cysharp.Threading;
 
 using Object = UnityEngine.Object;
 
@@ -25,17 +27,19 @@ namespace PsychesBound
             _main = this;
         }
 
-        private static List<CancellationTokenSource> tokens = new List<CancellationTokenSource>();
+        //private static List<CancellationTokenSource> tokens = new List<CancellationTokenSource>();
 
-        public static void AddToken(CancellationTokenSource token)
-        {
-            tokens.Add(token);
-        }
+        //public static void AddToken(CancellationTokenSource token)
+        //{
+        //    tokens.Add(token);
+        //}
 
-        public static void RemoveToken(CancellationTokenSource token)
-        {
-            tokens.Remove(token);
-        }
+        //public static void RemoveToken(CancellationTokenSource token)
+        //{
+        //    tokens.Remove(token);
+        //}
+
+        CancellationTokenSource stateToken = new CancellationTokenSource();
 
         public void ChangeToBattleState()
         {
@@ -46,11 +50,11 @@ namespace PsychesBound
         {
             if(currentState != null && stateCoroutine != null)
             {
-                StartCoroutine(currentState.OnExit());
-                StopCoroutine(stateCoroutine);
+                currentState.OnExit();
+                stateToken.Cancel();
             }
 
-            if(currentState?.GetType() == state.GetType())
+            if(currentState?.GetType() == state?.GetType())
             {
                 Debug.Log("Same state type");
                 return;
@@ -58,8 +62,9 @@ namespace PsychesBound
 
             currentState = state;
 
-            StartCoroutine(currentState.OnEnter());
-            stateCoroutine = StartCoroutine(currentState.OnUpdate());
+            currentState.OnEnter();
+            UniTask.Run(currentState.OnUpdate, true,stateToken.Token);
+            //UniTask.Run
 
         }
 
@@ -93,12 +98,14 @@ namespace PsychesBound
 
         private void OnApplicationQuit()
         {
-            foreach(var token in tokens)
-            {
-                token.Cancel();
-            }
+            //foreach(var token in tokens)
+            //{
+            //    token.Cancel();
+            //}
 
-            tokens.Clear();
+            //tokens.Clear();
+
+            stateToken.Cancel();
         }
 
         #region Events

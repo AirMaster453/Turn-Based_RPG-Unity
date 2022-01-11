@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System;
+using System.Threading;
 
 namespace PsychesBound
 {
@@ -12,7 +15,7 @@ namespace PsychesBound
         /// <summary>
         /// If a unit's turn is in play
         /// </summary>
-        public bool TurnIsActive { get; private set; } = false;
+        public static bool TurnIsActive { get; private set; } = false;
 
         public int TurnCounter;
 
@@ -21,6 +24,11 @@ namespace PsychesBound
         public BattleField field;
 
         internal Unit turnHolder;
+
+        public async static UniTask WaitInCombatSeconds(float seconds, CancellationToken token = default)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(seconds), () => !TurnIsActive, PlayerLoopTiming.Update, token);
+        }
 
         public GameBattleState(GameManager manager)
         {
@@ -41,30 +49,31 @@ namespace PsychesBound
             turnHolder = null;
         }
 
-        public IEnumerator OnEnter()
+        public async UniTask OnEnter()
         {
             //GameManager.field = Object.FindObjectOfType<BattleField>();
-            yield return new WaitUntil(GameManager.field.TileSet);
+            await UniTask.WaitUntil(GameManager.field.TileSet);
 
             GameManager.field.PlacePlayers(GameManager.CombatTest.player);
             GameManager.field.PlaceEnemies(GameManager.CombatTest.enemy);
 
             GameManager.CombatTest.player.OnTurnStartCallback += MovePlayer;
+            GameManager.CombatTest.enemy.OnTurnStartCallback += MovePlayer;
 
             CombatTime = 0;
 
             this.GameManager.CombatTest.player.BeginBattle(this);
             this.GameManager.CombatTest.enemy.BeginBattle(this);
-            yield break;
+            
         }
 
-        public IEnumerator OnExit()
+        public async UniTask OnExit()
         {
             TurnIsActive = false;
-            yield break;
+            await UniTask.Yield();
         }
 
-        public IEnumerator OnUpdate()
+        public async void OnUpdate()
         {
             while(true)
             {
@@ -72,18 +81,27 @@ namespace PsychesBound
                 {
                     CombatTime += Time.deltaTime;
                 }
-                yield return null;
+                await UniTask.Yield();
             }
         }
 
-        public void MovePlayer(Unit unit)
+        public  void MovePlayer(Unit unit)
+        {
+            DoAction(unit);
+        }
+
+
+        private async UniTask DoAction(Unit unit)
         {
             var nextTiles = unit.RoleManager.MainRole.RoleType.MovementType.GetTilesInRange(GameManager.field, unit);
 
-            int tile = Random.Range(0, nextTiles.Count);
+            int tile = UnityEngine.Random.Range(0, nextTiles.Count);
             Debug.Log($"{unit} is moving");
 
-            GameManager.StartCoroutine(unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field));
+            await unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field);
+            EndTurn();
         }
+
+
     }
 }

@@ -135,6 +135,25 @@ namespace Cysharp.Threading.Tasks
             return Delay(delayTimeSpan, delayType, delayTiming, cancellationToken);
         }
 
+        /// <summary>
+        /// For stopping time elapse
+        /// </summary>
+        /// <param name="delayTimeSpan"></param>
+        /// <param name="timeCondition"></param>
+        /// <param name="delayTiming"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static UniTask Delay(TimeSpan delayTimeSpan, Func<bool> timeCondition, PlayerLoopTiming delayTiming = PlayerLoopTiming.Update, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (delayTimeSpan < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException("Delay does not allow minus delayTimeSpan. delayTimeSpan:" + delayTimeSpan);
+            }
+
+            return new UniTask(DelayCombatPromise.Create(delayTimeSpan, timeCondition, delayTiming, cancellationToken, out var token), token);
+        }
+
         public static UniTask Delay(TimeSpan delayTimeSpan, DelayType delayType, PlayerLoopTiming delayTiming = PlayerLoopTiming.Update, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (delayTimeSpan < TimeSpan.Zero)
@@ -463,6 +482,123 @@ namespace Cysharp.Threading.Tasks
                 core.Reset();
                 currentFrameCount = default;
                 delayFrameCount = default;
+                cancellationToken = default;
+                return pool.TryPush(this);
+            }
+        }
+
+        /// <summary>
+        /// A custom Delay prommise for combat
+        /// </summary>
+        sealed class DelayCombatPromise : IUniTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayCombatPromise>
+        {
+            static TaskPool<DelayCombatPromise> pool;
+            DelayCombatPromise nextNode;
+            public ref DelayCombatPromise NextNode => ref nextNode;
+
+            static DelayCombatPromise()
+            {
+                TaskPool.RegisterSizeGetter(typeof(DelayCombatPromise), () => pool.Size);
+            }
+
+            int initialFrame;
+            float delayTimeSpan;
+            float elapsed;
+            private Func<bool> timeCondition;
+            CancellationToken cancellationToken;
+
+            UniTaskCompletionSourceCore<object> core;
+
+            DelayCombatPromise()
+            {
+            }
+
+            public static IUniTaskSource Create(TimeSpan delayTimeSpan, Func<bool> func, PlayerLoopTiming timing, CancellationToken cancellationToken, out short token)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return AutoResetUniTaskCompletionSource.CreateFromCanceled(cancellationToken, out token);
+                }
+
+                if (!pool.TryPop(out var result))
+                {
+                    result = new DelayCombatPromise();
+                }
+
+                result.elapsed = 0.0f;
+                result.delayTimeSpan = (float)delayTimeSpan.TotalSeconds;
+                result.cancellationToken = cancellationToken;
+                result.initialFrame = PlayerLoopHelper.IsMainThread ? Time.frameCount : -1;
+                result.timeCondition = func;
+
+                TaskTracker.TrackActiveTask(result, 3);
+
+                PlayerLoopHelper.AddAction(timing, result);
+
+                token = result.core.Version;
+                return result;
+            }
+
+            public void GetResult(short token)
+            {
+                try
+                {
+                    core.GetResult(token);
+                }
+                finally
+                {
+                    TryReturn();
+                }
+            }
+
+            public UniTaskStatus GetStatus(short token)
+            {
+                return core.GetStatus(token);
+            }
+
+            public UniTaskStatus UnsafeGetStatus()
+            {
+                return core.UnsafeGetStatus();
+            }
+
+            public void OnCompleted(Action<object> continuation, object state, short token)
+            {
+                core.OnCompleted(continuation, state, token);
+            }
+
+            public bool MoveNext()
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    core.TrySetCanceled(cancellationToken);
+                    return false;
+                }
+
+                if (elapsed == 0.0f)
+                {
+                    if (initialFrame == Time.frameCount)
+                    {
+                        return true;
+                    }
+                }
+
+                if(timeCondition())
+                    elapsed += Time.deltaTime;
+                if (elapsed >= delayTimeSpan)
+                {
+                    core.TrySetResult(null);
+                    return false;
+                }
+
+                return true;
+            }
+
+            bool TryReturn()
+            {
+                TaskTracker.RemoveTracking(this);
+                core.Reset();
+                delayTimeSpan = default;
+                elapsed = default;
                 cancellationToken = default;
                 return pool.TryPush(this);
             }

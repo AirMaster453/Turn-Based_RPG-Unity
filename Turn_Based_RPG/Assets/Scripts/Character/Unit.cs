@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 
 namespace PsychesBound
@@ -15,7 +17,7 @@ namespace PsychesBound
     {
 
         public const int AtbBarSize = 5000;
-        public const float OverallSpeed = 7.25f;
+        public const float OverallSpeed = 10.25f;
         // Add level. (If jobs/roles don't offer their own level system)
 
         // Add Stats
@@ -150,9 +152,37 @@ namespace PsychesBound
 
         private Coroutine battleCoroutine;
 
-        private IEnumerator OnBattle(GameBattleState state)
+        //private IEnumerator OnBattle(GameBattleState state)
+        //{
+        //    var routine = new WaitWhile(() => state.TurnIsActive);
+        //    while (true)
+        //    {
+        //        activeTimeBar += stats.TimeBarCharge() * OverallSpeed * Time.deltaTime;
+
+        //        activeTimeBar = Mathf.Clamp(activeTimeBar, 0, AtbBarSize);
+
+        //        Debug.Log($"{name}: atb = {activeTimeBar}");
+
+        //        //var routine = new WaitWhile(() => state.TurnIsActive);
+        //        yield return routine;
+        //        if (activeTimeBar >= AtbBarSize && state.turnHolder == null)
+        //        {
+        //            state.StartTurn(this);
+        //            activeTimeBar = 0;
+
+        //            Debug.Log($"{name} turn is active");
+
+        //        }
+
+        //    }
+        //}
+
+
+        CancellationTokenSource battleTask = new CancellationTokenSource();
+
+        private async UniTask OnBattle(GameBattleState state)
         {
-            var routine = new WaitWhile(() => state.TurnIsActive);
+            var routine = new WaitWhile(() => GameBattleState.TurnIsActive);
             while (true)
             {
                 activeTimeBar += stats.TimeBarCharge() * OverallSpeed * Time.deltaTime;
@@ -162,27 +192,37 @@ namespace PsychesBound
                 Debug.Log($"{name}: atb = {activeTimeBar}");
 
                 //var routine = new WaitWhile(() => state.TurnIsActive);
-                yield return routine;
+                await UniTask.WaitWhile(() => GameBattleState.TurnIsActive, PlayerLoopTiming.Update,battleTask.Token);
                 if (activeTimeBar >= AtbBarSize && state.turnHolder == null)
                 {
                     state.StartTurn(this);
                     activeTimeBar = 0;
 
                     Debug.Log($"{name} turn is active");
-                    
+
                 }
-                
+
             }
         }
 
         public void BeginBattle(GameBattleState state)
         {
-            battleCoroutine = StartCoroutine(OnBattle(state));
+            //battleCoroutine = StartCoroutine(OnBattle(state));
+
+            OnBattle(state);
         }
 
         public void EndBattle()
         {
-            StopCoroutine(battleCoroutine);
+            //StopCoroutine(battleCoroutine);
+
+            battleTask.Cancel();
+        }
+
+
+        protected void OnApplicationQuit()
+        {
+            battleTask.Cancel();
         }
     }
 }
