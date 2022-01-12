@@ -49,7 +49,7 @@ namespace PsychesBound
             while(true)
             {
                 healthBar.fillAmount = unit.Stats.HealthPercent();
-                await UniTask.Yield();
+                await UniTask.WaitWhile(() => healthBar.fillAmount == unit.Stats.HealthPercent());
             }
         }
 
@@ -58,7 +58,7 @@ namespace PsychesBound
             while (true)
             {
                 aetherBar.fillAmount = unit.Stats.AetherPercent();
-                await UniTask.Yield();
+                await UniTask.WaitWhile(() => aetherBar.fillAmount == unit.Stats.AetherPercent());
             }
         }
 
@@ -68,7 +68,7 @@ namespace PsychesBound
             while (true)
             {
                 activeTimeBar.fillAmount = unit.TimeBarPercent();
-                await UniTask.Yield();
+                await UniTask.WaitWhile(() => activeTimeBar.fillAmount == unit.TimeBarPercent());
             }
         }
 
