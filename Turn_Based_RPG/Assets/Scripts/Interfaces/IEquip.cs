@@ -8,11 +8,6 @@ namespace PsychesBound
     {
         IModifier GetModifier(StatType stat);
 
-        IModifier Distance { get; }
-        IModifier JumpHeight { get; }
-        IModifier HitRate { get; }
-        IModifier CritRate { get; }
-        IModifier Evasion { get; }
-        IModifier Speed { get; }
+        IModifier GetModifier(SecondaryType type);
     }
 }

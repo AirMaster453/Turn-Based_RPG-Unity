@@ -17,7 +17,7 @@ namespace PsychesBound
     {
 
         public const int AtbBarSize = 5000;
-        public const float OverallSpeed = 10.25f;
+        public const float OverallSpeed = 19.45f;
         // Add level. (If jobs/roles don't offer their own level system)
 
         // Add Stats
@@ -48,7 +48,7 @@ namespace PsychesBound
 
         public Transform Jumper => jumper;
 
-        public Tile tile { get => _tile; protected set => _tile = value; }
+        public Tile Tile { get => _tile; protected set => _tile = value; }
 
         private Tile _tile;
 
@@ -65,11 +65,11 @@ namespace PsychesBound
         public void Place(Tile target, BattleField field)
         {
             // Make sure old tile location is not still pointing to this unit
-            if (tile != null && tile.unit == this)
-                tile.unit = null;
+            if (Tile != null && Tile.unit == this)
+                Tile.unit = null;
 
             // Link unit and tile references
-            tile = target;
+            Tile = target;
 
             if (target != null)
             {
@@ -79,7 +79,7 @@ namespace PsychesBound
         }
         public void Match()
         {
-            transform.position = tile.transform.position /** 2*/;
+            transform.position = Tile.transform.position /** 2*/;
             transform.localEulerAngles = dir.ToEuler();
         }
 

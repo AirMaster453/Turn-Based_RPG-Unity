@@ -15,7 +15,7 @@ namespace PsychesBound
         [SerializeField, Min(1)]
         protected int initialValue;
 
-        public int InitialValue { get => initialValue; set => initialValue = value; }
+        public int InitialValue { get => initialValue; internal set => initialValue = value; }
 
 
         protected int lastInitValue = int.MinValue;

@@ -5,10 +5,11 @@ using UnityEngine;
 
 namespace PsychesBound
 {
-    public interface IDamageSender : ITileObject
+    public interface ITileObject
     {
-        float GetAttack(DamageType type);
+        Tile Tile { get; }
 
-        
+
+        void Place(Tile tile, BattleField field);
     }
 }

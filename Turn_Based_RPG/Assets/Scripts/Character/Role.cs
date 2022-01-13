@@ -52,12 +52,17 @@ namespace PsychesBound
             return GetBonus(type);
         }
 
-        public IModifier Distance => new FlatModifier(roleType.Distance, this);
-        public IModifier JumpHeight => new FlatModifier(roleType.JumpHeight, this);
-        public IModifier HitRate => new FlatModifier(roleType.HitRate, this);
-        public IModifier CritRate => new FlatModifier(roleType.CritRate, this);
-        public IModifier Evasion => new FlatModifier(roleType.Evasion, this);
-        public IModifier Speed => new FlatModifier(roleType.Speed, this);
+        public IModifier GetModifier(SecondaryType type)
+        {
+            return new FlatModifier(roleType.GetStat(type), this);
+        }
+
+        //public IModifier Distance => new FlatModifier(roleType.Distance, this);
+        //public IModifier JumpHeight => new FlatModifier(roleType.JumpHeight, this);
+        //public IModifier HitRate => new FlatModifier(roleType.HitRate, this);
+        //public IModifier CritRate => new FlatModifier(roleType.CritRate, this);
+        //public IModifier Evasion => new FlatModifier(roleType.Evasion, this);
+        //public IModifier Speed => new FlatModifier(roleType.Speed, this);
 
         public void InitialBaseValues(StatFormulaTree tree)
         {
@@ -66,7 +71,7 @@ namespace PsychesBound
             for(int i = 0; i < roleBonus.Length; i++, t++)
             {
                 //GetBonus(t).InitialValue = roleType.GetStat(t);
-                GetBonus(t).BaseValue = (int)tree.GetFormula(t).Calculate(GetBonus(t), _level.CurrentLevel);
+                roleBonus[i].BaseValue = (int)tree.GetFormula(t).Calculate(GetBonus(t), _level.CurrentLevel);
             }
         }
 
@@ -130,7 +135,7 @@ namespace PsychesBound
             StatType t = 0;
             for (int i = 0; i < roleBonus.Length; i++, t++)
             {
-                GetBonus(t).BaseValue = (int)formulaTree.GetFormula(t).Calculate(GetBonus(t), level);
+                roleBonus[i].BaseValue = (int)formulaTree.GetFormula(t).Calculate(GetBonus(t), level);
             }
         }
 

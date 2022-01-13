@@ -11,7 +11,7 @@ namespace PsychesBound
         public const string menuName = "Movement Type/";
         public virtual List<Tile> GetTilesInRange(BattleField field, Unit unit)
         {
-            List<Tile> retValue = field.Search(unit, unit.tile, ExpandSearch);
+            List<Tile> retValue = field.Search(unit, unit.Tile, ExpandSearch);
             Filter(retValue);
             return retValue;
         }

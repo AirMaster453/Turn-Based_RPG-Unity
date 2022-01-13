@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Lowscope.Saving;
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
-//#endif
+#endif
 
 namespace PsychesBound
 {
@@ -45,6 +45,11 @@ namespace PsychesBound
 
         public FloatStat SpeedPercent => speedPercent;
 
+        [SerializeField]
+        private FloatStat supportPercent = new FloatStat(100);
+
+        public FloatStat SupportPercent => supportPercent;
+
 
 
         [SerializeField]
@@ -81,6 +86,29 @@ namespace PsychesBound
                 }
 
                 return stats[(int)i];
+            }
+        }
+
+        public IStat GetStat(SecondaryType i)
+        {
+            switch(i)
+            {
+                case SecondaryType.Distance:
+                    return Distance;
+                case SecondaryType.JumpHeight:
+                    return JumpHeight;
+                case SecondaryType.HitRate:
+                    return HitRatePercent;
+                case SecondaryType.CritRate:
+                    return CritRatePercent;
+                case SecondaryType.Evasion:
+                    return EvasionPercent;
+                case SecondaryType.Speed:
+                    return SpeedPercent;
+                case SecondaryType.Support:
+                    return SupportPercent;
+                default:
+                    return null;
             }
         }
 
@@ -137,17 +165,10 @@ namespace PsychesBound
                 stats[(int)i].AddModifier(equip.GetModifier(i));
             }
 
-            distance.AddModifier(equip.Distance);
-
-            jumpHeight.AddModifier(equip.JumpHeight);
-
-            hitRatePercent.AddModifier(equip.HitRate);
-
-            critRatePercent.AddModifier(equip.CritRate);
-
-            evasionPercent.AddModifier(equip.Evasion);
-
-            speedPercent.AddModifier(equip.Speed);
+            for (SecondaryType i = 0; i < (SecondaryType)Enum.GetNames(typeof(SecondaryType)).Length; i++)
+            {
+                GetStat(i).AddModifier(equip.GetModifier(i));
+            }
         }
 
         public bool RemoveFromSource(object src)
@@ -158,17 +179,11 @@ namespace PsychesBound
                 didRemove = didRemove || stats[i].RemoveFromSource(src);
             }
 
-            didRemove = didRemove || distance.RemoveFromSource(src);
 
-            didRemove = didRemove || jumpHeight.RemoveFromSource(src);
-
-            didRemove = didRemove || hitRatePercent.RemoveFromSource(src);
-
-            didRemove = didRemove || critRatePercent.RemoveFromSource(src);
-
-            didRemove = didRemove || evasionPercent.RemoveFromSource(src);
-
-            didRemove = didRemove || speedPercent.RemoveFromSource(src);
+            for (SecondaryType i = 0; i < (SecondaryType)Enum.GetNames(typeof(SecondaryType)).Length; i++)
+            {
+                didRemove = didRemove || GetStat(i).RemoveFromSource(src);
+            }
 
             return didRemove;
         }
@@ -205,7 +220,7 @@ namespace PsychesBound
         }
     }
 
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
     [CustomEditor(typeof(StatManager))]
     public class StatManagerEditor :Editor
     {
@@ -233,5 +248,5 @@ namespace PsychesBound
         }
     }
     
-//#endif
+#endif
 }

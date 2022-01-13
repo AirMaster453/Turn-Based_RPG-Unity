@@ -50,6 +50,11 @@ namespace PsychesBound
         public float Speed => speed;
 
 
+        [SerializeField, Min(0)]
+        private float support = 0;
+
+        public float Support => support;
+
 
 
         // Add abilities
@@ -90,8 +95,31 @@ namespace PsychesBound
             }
         }
 
+        public float GetStat(SecondaryType type)
+        {
+            switch(type)
+            {
+                case SecondaryType.Distance:
+                    return distance;
+                case SecondaryType.JumpHeight:
+                    return jumpHeight;
+                case SecondaryType.HitRate:
+                    return hitRate;
+                case SecondaryType.CritRate:
+                    return critRate;
+                case SecondaryType.Evasion:
+                    return evasion;
+                case SecondaryType.Speed:
+                    return speed;
+                case SecondaryType.Support:
+                    return support;
+                default:
+                    return 0;
+            }
+        }
 
-        public void SetStat(StatType type, int value)
+
+        internal void SetStat(StatType type, int value)
         {
             try
             {
