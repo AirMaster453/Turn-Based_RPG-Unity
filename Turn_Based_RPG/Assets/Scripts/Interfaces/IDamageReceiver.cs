@@ -10,9 +10,9 @@ namespace PsychesBound
     public interface IDamageReceiver : ITileObject
     {
         int CurrentHealth { get; set;  }
-        UniTask TakeDamage(float damage, IDamageSender source);
+        UniTask TakeDamage(int damage, IDamageSender source);
 
-        float GetDefense(DamageType type);
+        int GetDefense(DamageType type);
 
         event Action<float, IDamageSender> OnTakeDamage;
 

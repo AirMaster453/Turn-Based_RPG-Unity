@@ -7,7 +7,7 @@ namespace PsychesBound
 {
     public interface IDamageSender : ITileObject
     {
-        float GetAttack(DamageType type);
+        int GetAttack(DamageType type);
 
         
     }

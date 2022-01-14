@@ -18,11 +18,11 @@ namespace PsychesBound
         public string Description => description;
 
         //this is subject to change
-        public abstract List<Unit> GetTargets(Unit unit, BattleField field);
+        public abstract HashSet<ITileObject> GetTargets(IBattler user, BattleField field);
 
-        public abstract List<Unit> SearchUnits(Unit unit, BattleField field);
+        //public abstract List<Unit> SearchUnits(IBattler user, BattleField field);
 
-        public abstract UniTask OnBattleStart(Unit unit, BattleField field  );
-        public abstract UniTask OnBattleEnd(Unit unit, BattleField field);
+        public abstract UniTask OnBattleStart(IBattler unit, BattleField field  );
+        public abstract UniTask OnBattleEnd(IBattler unit, BattleField field);
     }
 }

@@ -11,5 +11,12 @@ namespace PsychesBound
 
 
         void Place(Tile tile, BattleField field);
+
+        /// <summary>
+        /// To match the placement of the current tile
+        /// </summary>
+        void Match();
+
+        Direction Direction { get; set; }
     }
 }

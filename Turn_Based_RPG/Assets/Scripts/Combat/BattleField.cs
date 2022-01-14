@@ -81,7 +81,7 @@ namespace PsychesBound
                 tiles[i].GetComponent<Renderer>().material.SetColor("_Color", defaultTileColor);
         }
 
-        public List<Tile> Search(Unit unit, Tile start, Func<Tile, Tile, Unit, bool> addTile)
+        public List<Tile> Search(IBattler unit, Tile start, Func<Tile, Tile, IBattler, bool> addTile)
         {
             List<Tile> retValue = new List<Tile>();
             retValue.Add(start);

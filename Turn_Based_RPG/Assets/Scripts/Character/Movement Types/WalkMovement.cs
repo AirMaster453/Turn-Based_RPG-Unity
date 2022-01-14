@@ -15,19 +15,19 @@ namespace PsychesBound
 
 
 
-        protected override bool ExpandSearch(Tile from, Tile to, Unit unit)
+        protected override bool ExpandSearch(Tile from, Tile to, IBattler unit)
         {
             // Skip if the distance in height between the two tiles is more than the unit can jump
-            if ((Mathf.Abs(from.height - to.height) > unit.Stats.JumpHeight.Value))
+            if ((Mathf.Abs(from.height - to.height) > (int)unit.GetStatValue(SecondaryType.JumpHeight)))
                 return false;
             // Skip if the tile is occupied by an enemy
-            if (to.unit != null)
+            if (to.content != null)
                 return false;
             return base.ExpandSearch(from, to, unit);
         }
 
 
-        protected async virtual UniTask Turn(Unit unit, Direction dir)
+        protected async virtual UniTask Turn(IBattler unit, Direction dir)
         {
             //TransformLocalEulerTweener t = (TransformLocalEulerTweener)transform.RotateToLocal(dir.ToEuler(), 0.25f, EasingEquations.EaseInOutQuad);
             var t = unit.transform.DORotate(dir.ToEuler(), 0.25f, RotateMode.Fast).SetEase(Ease.InOutQuad);
@@ -38,32 +38,39 @@ namespace PsychesBound
                 t.startValue = new Vector3(t.startValue.x, 360f, t.startValue.z);
             else if (Mathf.Approximately(t.startValue.y, 270) && Mathf.Approximately(t.endValue.y, 0))
                 t.endValue = new Vector3(t.startValue.x, 360f, t.startValue.z);
-            unit.dir = dir;
+            unit.Direction = dir;
+
+           
 
             //while (t != null)
             //    yield return null;
 
 
             await UniTask.Delay(TimeSpan.FromSeconds(t.Duration()), DelayType.DeltaTime);
+
+            t.Kill(false);
             //yield return new WaitForSeconds(t.Duration());
 
         }
 
-        async UniTask Walk(Unit unit, Tile to)
+        async UniTask Walk(IBattler unit, Tile to)
         {
             Tweener tweener = unit.transform.DOMove(to.center, 0.5f, false).SetEase(Ease.Linear);
             await UniTask.Delay(TimeSpan.FromSeconds(tweener.Duration()), DelayType.DeltaTime);
+
+            tweener.Kill(false);
         }
-        async UniTask Jump(Unit unit, Tile to)
+        async UniTask Jump(IBattler unit, Tile to)
         {
             Tweener tweener = unit.transform.DOMove(to.center, 0.5f, false).SetEase(Ease.Linear);
             Tweener t2 = unit.Jumper.DOLocalMove(new Vector3(0, Tile.stepHeight * 2f, 0), tweener.Duration() / 2f, false).SetEase(Ease.InOutQuad);
             t2.SetLoops(1, LoopType.Yoyo);
             await UniTask.Delay(TimeSpan.FromSeconds(tweener.Duration()), DelayType.DeltaTime);
+            tweener.Kill(false);
         }
 
 
-        public async override UniTask Traverse(Tile tile, Unit unit, BattleField field)
+        public async override UniTask Traverse(Tile tile, IBattler unit, BattleField field)
         {
             unit.Place(tile, field);
             // Build a list of way points from the unit's 
@@ -80,7 +87,7 @@ namespace PsychesBound
                 Tile from = targets[i - 1];
                 Tile to = targets[i];
                 Direction dir = from.GetDirection(to);
-                if (unit.dir != dir)
+                if (unit.Direction != dir)
                 {
                     await Turn(unit, dir);
                 }
