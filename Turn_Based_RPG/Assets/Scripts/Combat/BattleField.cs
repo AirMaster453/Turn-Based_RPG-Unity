@@ -128,7 +128,7 @@ namespace PsychesBound
                     SwapReference(ref checkNow, ref checkNext);
             }
 
-
+            
             return retValue;
         }
 

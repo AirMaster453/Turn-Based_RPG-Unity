@@ -99,6 +99,10 @@ namespace PsychesBound
             Debug.Log($"{unit} is moving");
 
             await unit.RoleManager.MainRole.RoleType.MovementType.Traverse(nextTiles[tile], unit, GameManager.field);
+
+            nextTiles = null;
+
+            //GC.Collect();
             EndTurn();
         }
 

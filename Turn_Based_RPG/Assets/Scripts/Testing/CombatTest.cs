@@ -31,7 +31,7 @@ namespace PsychesBound.Testing
             var ui = SceneManager.GetSceneByName("UI");
             if(!ui.isLoaded)
             {
-                SceneManager.LoadScene("UI", LoadSceneMode.Additive);
+                SceneManager.LoadSceneAsync("UI", LoadSceneMode.Additive);
             }
 
             List<GameObject> objects = new List<GameObject>(ui.GetRootGameObjects());
@@ -40,7 +40,15 @@ namespace PsychesBound.Testing
             if(canvas)
             {
                 //Get child component of action display for player characters
+                var options = canvas.GetComponentInChildren<UnitOptionDisplay>();
+                options.gameObject.SetActive(true);
+                options.unit = unit;
             }
+        }
+
+        public void OnPlayerCharacterFinish(Unit unit)
+        {
+
         }
     }
 }
